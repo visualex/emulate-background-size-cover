@@ -1,0 +1,52 @@
+<html>
+<head>
+    <title>Emulating background-size:cover;</title>
+    <script type="text/javascript" src="jquery.js"></script>
+    <script type="text/javascript">
+    (function( $ ){
+        $.fn.getBackgroundImageSizeCover = function(callback) {
+            this.each(function() {
+                div_height = $(this).height();
+                div_width = $(this).width();
+
+                bg_imge_str = $(this).css('background-image').replace(/^url\(["']?/, '').replace(/["']?\)$/, '');
+                image_object = new Image();
+                image_object.src = bg_imge_str;
+
+                image_object.onload = function(){
+                    img_width = scaled_width = image_object.width;
+                    img_height = scaled_height = image_object.height;
+                    ratio = img_height / img_width;
+                    while(scaled_height < div_height){
+                        scaled_width+= 1;
+                        scaled_height+= ratio;
+                    }
+                    while(scaled_width<div_width){
+                        scaled_width+=1;
+                        scaled_height+= ratio;
+                    }
+                    callback(scaled_width, scaled_height);
+                }
+            });
+        };
+    })( jQuery );
+</script>
+
+<style type="text/css">
+    .element{min-height:600px; background-image: url("bg2.jpg"); background-size:cover;}
+</style>
+
+</head>
+<body>
+
+    <div class="element"></div>
+
+    <script type="text/javascript">
+    $(document).ready(function(){
+        $('.element').getBackgroundImageSizeCover(function(w,h){
+            console.log( w,h )
+        });
+    });
+    </script>
+</body>
+</html>
